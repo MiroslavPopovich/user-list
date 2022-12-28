@@ -1,68 +1,87 @@
-const baseURL = 'https://parseapi.back4app.com/classes/People';
+const host = 'https://parseapi.back4app.com/classes';
+const applicationId = 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u';
+const restApiKey = '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL';
 
+const endPoints ={
+    all : '/People',
+    byId: '/People/',
+    add: '/People',
+    edit: '/People/',
+    delete: '/People/',
+}
 
-export const get_all = async () => {
-    const response = await fetch(`${baseURL}`, {
-        method: 'GET', 
-        headers: {
-            'X-Parse-Application-Id': 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u',
-            'X-Parse-REST-API-Key': '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL',
-         },
-        });
+async function request(url, options){// returns promise
+    try{
+        const response = await fetch(host + url, options);
+
+        if (response.ok === false) {
+            const error = await response.json();
+            throw new Error(error.message);
+        }
+
         const result = await response.json();
         return result;
+    }catch(err){
+        alert(err.message);
+        throw err; // throws the error again so other fnc calling the request can get the error too
+    }
 };
 
-export const get_one = async (contactId) => {
-    const response = await fetch(`${baseURL}/${contactId}`, {
-        method: 'GET', 
+function createOption(method = 'GET', data){ // if we don not choose any method it does get option/ data is object for the request body
+    const options = {
+        method,
         headers: {
-            'X-Parse-Application-Id': 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u',
-            'X-Parse-REST-API-Key': '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL',
-         },
-        });
-        const result = await response.json();
-        return result;
-};
+            'X-Parse-Application-Id': applicationId,
+            'X-Parse-REST-API-Key': restApiKey,
+        }
+    };
 
-export const add_one = async (userData) => {
+    if (data !== undefined){
+        options.headers['Content-Type'] = 'application/json'; //tells the http what type of data we send
+        options.body = JSON.stringify(data); // data must be object
+    }
+
+    // get const userData
     
-    const response = await fetch(`${baseURL}`, {
-        method: 'POST', 
-        headers: {
-            'X-Parse-Application-Id': 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u',
-            'X-Parse-REST-API-Key': '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL',
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(userData),
-        });
-    const result = await response.json();
-    return result;
+    // if(userData !== null) {
+    //     options.headers['X-Authorization'] = userData.token; // we create userData so the token must to save inuser Data.token 
+    // }
+
+    return options
 };
 
-export const edit_one = async (userData, contactId) => {
-    
-    const response = await fetch(`${baseURL}/${contactId}`, {
-        method: 'PUT', 
-        headers: {
-            'X-Parse-Application-Id': 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u',
-            'X-Parse-REST-API-Key': '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL',
-            'Content-Type': 'application/json',
-         },
-         body: JSON.stringify(userData),
-        });
-    const result = await response.json();
-    return result;
+async function get(url) { // GET request and returns promise
+    return request(url, createOption());
 };
 
-export const delete_one = async (contactId) => {
-    const response = await fetch(`${baseURL}/${contactId}`, {
-        method: 'DELETE', 
-        headers: {
-            'X-Parse-Application-Id': 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u',
-            'X-Parse-REST-API-Key': '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL',
-         },
-        });
-        const result = await response.json();
-        return result;
+async function post(url, data) { // POST request and returns promise
+    return request(url, createOption('POST', data));
+};
+
+async function put(url, data) { // PUT request and returns promise
+    return request(url, createOption('PUT', data));
+};
+
+async function del(url) { // DELETE request and returns promise
+    return request(url, createOption('DELETE')); 
+};
+
+export async function get_all() {
+    return get(endPoints.all);// returns promise
+};
+
+export async function get_one(contactId){// id must be string
+    return get(endPoints.byId + contactId)// returns promise
+};
+
+export async function add_one(userData){// item must be object
+    return post(endPoints.add, userData)// returns promise
+};
+
+export async function edit_one(updatedUserData, contactId){// updatedItem must be object
+    return put(endPoints.edit + contactId, updatedUserData)// returns promise
+};
+
+export async function delete_one(contactId){// id must be string
+    return del(endPoints.delete + contactId)// returns promise
 };
