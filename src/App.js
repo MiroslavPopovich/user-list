@@ -10,8 +10,8 @@ import * as contactsService from './services/contactsService';
 import { Header } from './components/common/Header';
 import { Footer } from './components/common/Footer';
 import { Search } from './components/search/Search';
-import { SignIn } from './components/common/SignIn';
-import { SignUp } from './components/common/SignUp';
+import { LogIn } from './components/common/LogIn';
+import { Register } from './components/common/Register';
 import { ContactsList } from './components/contacts-list/ContactsList';
 import { ContactDetails } from './components/contacts-list/contact-details/ContactDetails';
 import { ContactsAction } from './components/contacts-list/ContactsListConstants';
@@ -49,7 +49,7 @@ function App() {
       ...address
     } = Object.fromEntries(formData);
 
-    const userData = {
+    const contactData = {
       firstName,
       lastName,
       email,
@@ -58,8 +58,8 @@ function App() {
       address,
     };
 
-    //console.log(userData)
-    contactsService.add_one(userData)
+    //console.log(contactData)
+    contactsService.add_one(contactData, "GmvJ9gKBlB")
       .then(newContact => {
         contactsService.get_one(newContact.objectId)
           .then(contact => {
@@ -81,7 +81,7 @@ function App() {
       ...address
     } = Object.fromEntries(formData);
 
-    const userData = {
+    const contactData = {
       firstName,
       lastName,
       email,
@@ -90,7 +90,7 @@ function App() {
       address,
     };
 
-    contactsService.edit_one(userData, contactId)
+    contactsService.edit_one(contactData, contactId)
       .then(() => {
         contactsService.get_all()
           .then((result) => {
@@ -100,6 +100,51 @@ function App() {
       })
   }
 
+  const LogInHandler = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const {
+      username,
+      password,
+    } = Object.fromEntries(formData);
+
+    const userData = {
+      username,
+      password,
+    };
+
+    contactsService.login(userData.username, userData.password)
+    .then((result) => {
+      console.log(result);
+    });
+  }
+
+  const RegisterHandler = (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const {
+      username,
+      email,
+      password,
+      repassword,
+    } = Object.fromEntries(formData);
+
+    const userData = {
+      username,
+      email,
+      password,
+    };
+
+    if (password === repassword){
+      contactsService.register(userData.username, userData.email, userData.password)
+        .then((result) => {
+          console.log(result);
+        });
+    }else{
+      alert('Diferent passwords');
+    }
+
+  }
   const ContactDeleteHandler = (e, contactId) => {
     e.preventDefault();
     contactsService.delete_one(contactId)
@@ -118,11 +163,11 @@ function App() {
       <Header />
       <main className="main">
         <Routes>
-          <Route path="/signIn" element={
-            <section className="card users-container"><SignIn /></section>
+          <Route path="/LogIn" element={
+            <section className="card users-container"><LogIn onLogInClick={LogInHandler}/></section>
           } />
-          <Route path="/signUp" element={
-            <section className="card users-container"><SignUp /></section>
+          <Route path="/Register" element={
+            <section className="card users-container"><Register onRegisterClick={RegisterHandler}/></section>
           } />
           <Route path="/" element={
             <section className="card users-container">
@@ -134,7 +179,7 @@ function App() {
               {contactAction.action === ContactsAction.Delete && <ContactDelete contact={contactAction.contact} onCloseClick={CloseHandler} onDeleteClick={ContactDeleteHandler} />}
             </section>
           } />
-        </Routes>
+        </Routes> 
       </main>
       <Footer />
     </div>

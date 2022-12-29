@@ -1,5 +1,13 @@
 import { Link } from 'react-router-dom';
+import * as contactsService from '../../services/contactsService';
+
 export const Header = () => {
+   function SignOutHendler () {
+    contactsService.logout()
+        .then((result) => {
+            console.log(result);
+        });
+    }
     return (
         <header className="header">
             <div className="logo">
@@ -14,12 +22,12 @@ export const Header = () => {
                                 className="nav-link active"
                                 id="tab-login"
                                 data-mdb-toggle="pill"
-                                to="/signIn"
+                                to="/LogIn"
                                 role="tab"
                                 aria-controls="pills-login"
                                 aria-selected="true"
                             >
-                                Sign In
+                                LogIn
                             </Link>
                         </li>
                         <li className="nav-item" role="presentation">
@@ -27,14 +35,29 @@ export const Header = () => {
                                 className="nav-link"
                                 id="tab-register"
                                 data-mdb-toggle="pill"
-                                to="/signUp"
+                                to="/Register"
                                 role="tab"
                                 aria-controls="pills-register"
                                 aria-selected="false"
                             >
-                                Sign Up
+                                Register
                             </Link>
                         </li>
+                        <li className="nav-item" role="presentation">
+                            <Link
+                                className="nav-link"
+                                id="tab-register"
+                                data-mdb-toggle="pill"
+                                to="/LogIn"
+                                role="tab"
+                                aria-controls="pills-register"
+                                aria-selected="false"
+                                onClick={SignOutHendler}
+                            >
+                                Logout
+                            </Link>
+                        </li>
+                        
                     </ul>
                     {/* Pills navs */}
                 </div>
