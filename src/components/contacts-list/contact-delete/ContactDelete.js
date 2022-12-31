@@ -1,17 +1,17 @@
-export const ContactDelete = ({
-    contact,
-    onCloseClick,
-    onDeleteClick,
-}) => {
+import { useContext } from "react";
+import { ContactContext } from "../../../contexts/ContactContext";
 
+export const ContactDelete = () => {
+    const { contactAction, CloseHandler, ContactDeleteHandler } = useContext(ContactContext);
+    const contact = contactAction.contact;
     return (
         <div className="overlay">
-            <div className="backdrop" onClick={onCloseClick}></div>
+            <div className="backdrop" onClick={CloseHandler}></div>
             <div className="modal">
                 <div className="confirm-container">
                     <header className="headers">
                         <h2>Are you sure you want to delete {`${contact.firstName} ${contact.lastName}`} account?</h2>
-                        <button className="btn close" onClick={onCloseClick}>
+                        <button className="btn close" onClick={CloseHandler}>
                             <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="xmark"
                                 className="svg-inline--fa fa-xmark" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512">
                                 <path fill="currentColor"
@@ -21,14 +21,14 @@ export const ContactDelete = ({
                         </button>
                     </header>
                     <div className="actions" >
-                    <form onSubmit={(e) => {onDeleteClick(e, contact.objectId)}}>
-                        <div id="form-actions">
-                            <button id="action-save" className="btn" type="submit">Delete</button>
-                            <button id="action-cancel" className="btn" type="button" onClick={onCloseClick}>
-                                Cancel
-                            </button>  
-                        </div>
-                    </form>
+                        <form onSubmit={(e) => { ContactDeleteHandler(e, contact.objectId) }}>
+                            <div id="form-actions">
+                                <button id="action-save" className="btn" type="submit">Delete</button>
+                                <button id="action-cancel" className="btn" type="button" onClick={CloseHandler}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
