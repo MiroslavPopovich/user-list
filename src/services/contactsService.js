@@ -1,4 +1,5 @@
-import { clearUserData, getUserData, setUserData } from "../services/util.js";
+import { getUserData } from "../services/util.js";
+
 const host = 'https://parseapi.back4app.com';
 const applicationId = 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u';
 const restApiKey = '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL';
@@ -13,6 +14,8 @@ const endPoints ={
     logOut: '/logout',
     register: '/users'
 }
+
+
 
 async function request(url, options){// returns promise
     try{
@@ -105,8 +108,8 @@ export async function login(username, password){
         token: result.sessionToken 
     };
     
-    setUserData(userData);
-    return result;
+    //setUserData(userData);
+    return userData;
 };
 
 export async function register(username, email, password){
@@ -116,11 +119,11 @@ export async function register(username, email, password){
         id: result.objectId,
         token: result.sessionToken 
     };
-    setUserData(userData);
-    return result
+    //setUserData(userData);
+    return userData
 };
 
 export async function logout(){
     await post(endPoints.logOut);
-    clearUserData();
+    //clearUserData();
 };

@@ -2,7 +2,7 @@ import { useEffect, useState, } from 'react';
 import {
   Routes,
   Route,
-  //useNavigate,
+  useNavigate,
   Navigate,
 } from 'react-router-dom';
 
@@ -20,6 +20,8 @@ import { ContactEdit } from './components/contacts-list/contact-edit/ContactEdit
 import { ContactDelete } from './components/contacts-list/contact-delete/ContactDelete';
 import './App.css';
 import { ContactContext } from './contexts/ContactContext';
+import { AuthContext } from './contexts/AuthContext';
+import { useSessionSorage } from './hooks/useSessionStorage';
 
 function App() {
 
@@ -32,12 +34,12 @@ function App() {
       });
   }, []);
 
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
 
   const [contactAction, setContactAction] = useState({ contact: null, action: null });
 
-
+  const [auth, setAuth] = useSessionSorage('auth', {});
   const CloseHandler = () => {
     setContactAction({ contact: null, action: null });
   }
@@ -133,6 +135,10 @@ function App() {
     contactsService.login(userData.username, userData.password)
       .then((result) => {
         console.log(result);
+        setAuth(result);
+        navigate('/');
+      }).catch(() => {
+        navigate('/404');
       });
   }
 
@@ -146,16 +152,20 @@ function App() {
       repassword,
     } = Object.fromEntries(formData);
 
-    const userData = {
-      username,
-      email,
-      password,
-    };
+    // const userData = {
+    //   username,
+    //   email,
+    //   password,
+    // };
 
     if (password === repassword) {
-      contactsService.register(userData.username, userData.email, userData.password)
+      contactsService.register(username, email, password)
         .then((result) => {
           console.log(result);
+          setAuth(result);
+          navigate('/');
+        }).catch(() => {
+          navigate('/404');
         });
     } else {
       alert('Diferent passwords');
@@ -176,53 +186,57 @@ function App() {
   }
 
   return (
+    <AuthContext.Provider value={{ auth, setAuth }}>
 
-    <div className="App">
-      <Header />
-      <ContactContext.Provider value={
-        {
-          contacts,
-          setContacts,
-          contactAction,
-          setContactAction,
-          ContactAddHandler,
-          CloseHandler,
-          contactActionClickHandler,
-          ContactEditHandler,
-          ContactDeleteHandler
-        }
-      }>
-        <main className="main">
-          <Routes>
-            <Route path="/LogIn" element={
-              <section className="card users-container">
-                <LogIn onLogInClick={LogInHandler} />
-              </section>
-            } />
-            <Route path="/Register" element={
-              <section className="card users-container">
-                <Register onRegisterClick={RegisterHandler} />
-              </section>
-            } />
-            <Route path="/" element={false ? //isLogIn
-              <>
-                {contactAction.action === ContactsAction.Details && <ContactDetails />}
-                {contactAction.action === ContactsAction.Add && <ContactAdd />}
-                {contactAction.action === ContactsAction.Edit && <ContactEdit />}
-                {contactAction.action === ContactsAction.Delete && <ContactDelete contact={contactAction.contact} onCloseClick={CloseHandler} onDeleteClick={ContactDeleteHandler} />}
+      <div className="App">
+        <Header />
+        <ContactContext.Provider value={
+          {
+            contacts,
+            setContacts,
+            contactAction,
+            setContactAction,
+            ContactAddHandler,
+            CloseHandler,
+            contactActionClickHandler,
+            ContactEditHandler,
+            ContactDeleteHandler
+          }
+        }>
+          <main className="main">
+            <Routes>
+              <Route path="/LogIn" element={
                 <section className="card users-container">
-                  <Search />
-                  <ContactsList />
+                  
+                    <LogIn onLogInClick={LogInHandler} />
+                 
                 </section>
-              </> : <Navigate to="/LogIn" />
-            } />
-          </Routes>
-        </main>
-      </ContactContext.Provider>
+              } />
+              <Route path="/Register" element={
+                <section className="card users-container">
+                  <Register onRegisterClick={RegisterHandler} />
+                </section>
+              } />
+              <Route path="/" element={auth.username 
+              ?  <>
+                  {contactAction.action === ContactsAction.Details && <ContactDetails />}
+                  {contactAction.action === ContactsAction.Add && <ContactAdd />}
+                  {contactAction.action === ContactsAction.Edit && <ContactEdit />}
+                  {contactAction.action === ContactsAction.Delete && <ContactDelete contact={contactAction.contact} onCloseClick={CloseHandler} onDeleteClick={ContactDeleteHandler} />}
+                  <section className="card users-container">
+                    <Search />
+                    <ContactsList />
+                  </section>
+                </> 
+              : <Navigate to="/LogIn" />
+              } />
+            </Routes>
+          </main>
+        </ContactContext.Provider>
 
-      <Footer />
-    </div>
-
+        <Footer />
+      </div>
+    </AuthContext.Provider>
   );
 }
 
