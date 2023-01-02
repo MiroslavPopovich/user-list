@@ -37,7 +37,7 @@ export const Header = () => {
                     <ul className="nav nav-pills nav-justified mb-3" id="ex1" role="tablist">
                     {auth.username 
                     ? <div id="user">
-                    <span>{auth.username}</span>
+                    <span className="span-username">{auth.username}</span>
                     <li className="nav-item" role="presentation">
                         <Link
                             className="nav-link"

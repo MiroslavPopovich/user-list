@@ -26,20 +26,25 @@ import { useSessionSorage } from './hooks/useSessionStorage';
 function App() {
 
   const [contacts, setContacts] = useState([]);
+  const [auth, setAuth] = useSessionSorage('auth', {});
 
   useEffect(() => {
-    contactsService.get_all()
+    
+    if (Object.keys(auth).length !== 0) {
+      contactsService.get_all(auth.id)
       .then((result) => {
         setContacts(result.results);
       });
-  }, []);
+    }
+
+  }, [auth]);
 
   const navigate = useNavigate();
 
 
   const [contactAction, setContactAction] = useState({ contact: null, action: null });
 
-  const [auth, setAuth] = useSessionSorage('auth', {});
+
   const CloseHandler = () => {
     setContactAction({ contact: null, action: null });
   }
@@ -51,6 +56,7 @@ function App() {
     } else {
       contactsService.get_one(contactId)
         .then((result) => {
+          console.log(result);
           setContactAction({ contact: result, action: actionType })
         });
     }
@@ -77,8 +83,8 @@ function App() {
       address,
     };
 
-    //console.log(contactData)
-    contactsService.add_one(contactData, "GmvJ9gKBlB")
+
+    contactsService.add_one(contactData, auth.id)
       .then(newContact => {
         contactsService.get_one(newContact.objectId)
           .then(contact => {
@@ -111,7 +117,7 @@ function App() {
 
     contactsService.edit_one(contactData, contactId)
       .then(() => {
-        contactsService.get_all()
+        contactsService.get_all(auth.id)
           .then((result) => {
             setContacts(result.results);
           });
@@ -206,19 +212,19 @@ function App() {
           <main className="main">
             <Routes>
               <Route path="/LogIn" element={
-                <section className="card users-container">
-                  
-                    <LogIn onLogInClick={LogInHandler} />
-                 
+                <section className="section-login">
+
+                  <LogIn onLogInClick={LogInHandler} />
+
                 </section>
               } />
               <Route path="/Register" element={
-                <section className="card users-container">
+                <section className="section-login">
                   <Register onRegisterClick={RegisterHandler} />
                 </section>
               } />
-              <Route path="/" element={auth.username 
-              ?  <>
+              <Route path="/" element={auth.username
+                ? <>
                   {contactAction.action === ContactsAction.Details && <ContactDetails />}
                   {contactAction.action === ContactsAction.Add && <ContactAdd />}
                   {contactAction.action === ContactsAction.Edit && <ContactEdit />}
@@ -227,8 +233,8 @@ function App() {
                     <Search />
                     <ContactsList />
                   </section>
-                </> 
-              : <Navigate to="/LogIn" />
+                </>
+                : <Navigate to="/LogIn" />
               } />
             </Routes>
           </main>

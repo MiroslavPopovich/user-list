@@ -115,14 +115,23 @@ ul {
   }
 }
 
-/* SignUp/SignIn css */
+/* Register/LogIn css */
+.section-login{
+  padding: 0 30%;
+}
+.span-username{
+  color: #f7f7f7
+}
 .btn-l {
-  width: 50% !important;
+  width: 60% !important;
   background-color: #2A87A5 !important;
   height: 4rem!important;
   font-size: large;
 } 
 
+.input-group{
+  width: 60%;
+}
 .form-group-l {
   margin-bottom: 3rem;
   width: 100%;

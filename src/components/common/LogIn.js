@@ -12,11 +12,11 @@ export const LogIn = ({
                     </div>
                     <div className="card-body rounded-bottom bg-white p-5">
                       <form onSubmit={onLogInClick}>
-                        <div className="form-group-l">
-                          <input type="text" id="username" name="username" className="form-control p-4" placeholder="Your username" required="required" />
+                        <div className="form-group-l center-l">
+                          <input type="text" id="username" name="username" className="form-control p-4 input-group" placeholder="Your username" required="required" />
                         </div>
-                        <div className="form-group-l">
-                          <input type="password" id="password" name="password" className="form-control p-4" placeholder="Your password" required="required" />
+                        <div className="form-group-l center-l">
+                          <input type="password" id="password" name="password" className="form-control p-4 input-group" placeholder="Your password" required="required" />
                         </div>
                         <div className="form-group-l center-l" >
                           <button className="btn  btn-primary btn-block py-3 btn-l" type="submit">LogIn</button>

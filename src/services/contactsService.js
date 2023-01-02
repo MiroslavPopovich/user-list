@@ -5,8 +5,8 @@ const applicationId = 'vH1nC8PWxT5rpuSwEFecTkc6oVrUKwxHLxMmtq6u';
 const restApiKey = '5TgCsI30MwrXrHwK0ZfYGGwFBtdYcSOqaQqOsFaL';
 
 const endPoints ={
-    all : '/classes/People',
-    byId: '/classes/People/',
+    all : (ownerId) => `/classes/People?where=${createPointerQuery('ownerId', '_User', ownerId)}&include=ownerId`,
+    byId: (id) => `/classes/People/${id}?include=ownerId`,
     add: '/classes/People',
     edit: '/classes/People/',
     delete: '/classes/People/',
@@ -15,6 +15,25 @@ const endPoints ={
     register: '/users'
 }
 
+function createPointerQuery(propName, className, objectId){
+    return createQuery({[propName]: createPointer(className, objectId)})
+}
+function createQuery(query){
+    return encodeURIComponent(JSON.stringify(query));
+}
+
+function createPointer(className, objectId) {
+    return {
+        __type: 'Pointer',
+        className,
+        objectId
+    };
+}
+
+function addOwner(record, id) {
+    record.ownerId = createPointer('_User', id)
+    return record;
+}
 
 
 async function request(url, options){// returns promise
@@ -50,6 +69,7 @@ function createOption(method = 'GET', data){ // if we don not choose any method 
     }
 
     if (data !== undefined){
+        
         options.headers['Content-Type'] = 'application/json'; 
         options.body = JSON.stringify(data); // data must be object
     }
@@ -74,20 +94,21 @@ async function del(url) { // DELETE request and returns promise
 };
 ////////////////////////////////////////////////////////////////
 
-export async function get_all() {
-    return get(endPoints.all);// returns promise
+export async function get_all(ownerId) {
+    return get(endPoints.all(ownerId));// returns promise
 };
 
 export async function get_one(contactId){// id must be string
-    return get(endPoints.byId + contactId)// returns promise
+    return get(endPoints.byId(contactId))// returns promise
 };
 
 export async function add_one(contactData, ownerId){// item must be object
-    contactData.ownerId = {
-        __type: 'Pointer',
-        className: '_User',
-        objectId: ownerId
-    };
+    // contactData.ownerId = {
+    //     __type: 'Pointer',
+    //     className: '_User',
+    //     objectId: ownerId
+    // };
+    addOwner(contactData, ownerId)
     return post(endPoints.add, contactData)// returns promise
 };
 
@@ -108,7 +129,6 @@ export async function login(username, password){
         token: result.sessionToken 
     };
     
-    //setUserData(userData);
     return userData;
 };
 
@@ -119,11 +139,10 @@ export async function register(username, email, password){
         id: result.objectId,
         token: result.sessionToken 
     };
-    //setUserData(userData);
+
     return userData
 };
 
 export async function logout(){
     await post(endPoints.logOut);
-    //clearUserData();
 };
