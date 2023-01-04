@@ -4,7 +4,7 @@ import { ContactContext } from '../../../contexts/ContactContext';
 
 export const ContactAdd = () => {
   const { ContactAddHandler, CloseHandler } = useContext(ContactContext);
-    return (
+  return (
     <div className="overlay">
       <div className="backdrop" onClick={CloseHandler}></div>
       <div className="modal">
@@ -121,13 +121,10 @@ export const ContactAdd = () => {
               <button id="action-save" className="btn" type="submit" >Add</button>
               <button id="action-cancel" className="btn" type="button" onClick={CloseHandler} >Cancel</button>
               {/* <Link to="/"> </Link>*/}
-              
-                
-              
             </div>
           </form>
         </div>
       </div>
-    </div> 
-    );
+    </div>
+  );
 }

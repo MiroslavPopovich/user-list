@@ -42,13 +42,15 @@ async function request(url, options){// returns promise
 
         if (response.ok === false) {
             const error = await response.json();
-            throw new Error(error.message);
+            throw error
+            //throw new Error(error.error);
         }
 
         const result = await response.json();
         return result;
     }catch(err){
-        alert(err.message);
+        //console.log(err)
+        //alert(err);
         throw err; // throws the error again so other fnc calling the request can get the error too
     }
 };

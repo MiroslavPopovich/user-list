@@ -44,6 +44,11 @@ function App() {
 
   const [contactAction, setContactAction] = useState({ contact: null, action: null });
 
+  const [errors, setErrors] = useState(
+    {
+      logInError: null,
+      userNameError: null,
+    });
 
   const CloseHandler = () => {
     setContactAction({ contact: null, action: null });
@@ -142,9 +147,11 @@ function App() {
       .then((result) => {
         console.log(result);
         setAuth(result);
+        setErrors({logInError: null})
         navigate('/');
-      }).catch(() => {
-        navigate('/404');
+      }).catch((err) => {
+        //console.log(err.error);
+        setErrors({logInError: err.error})
       });
   }
 
@@ -206,7 +213,8 @@ function App() {
             CloseHandler,
             contactActionClickHandler,
             ContactEditHandler,
-            ContactDeleteHandler
+            ContactDeleteHandler,
+            errors,
           }
         }>
           <main className="main">

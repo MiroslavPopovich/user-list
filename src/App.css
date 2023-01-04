@@ -116,6 +116,15 @@ ul {
 }
 
 /* Register/LogIn css */
+.hide {
+  visibility: hidden;
+}
+.show {
+  display: block;
+}
+.errors{
+  color: red;
+}
 .section-login{
   padding: 0 30%;
 }
@@ -152,6 +161,18 @@ ul {
   border-color: #6AABC0;
   outline: 0;
   box-shadow: 0 0 0 0.3rem rgba(106, 171, 192, 0.25);
+}
+
+.form-control-error:focus {
+  color: #495057;;
+  background-color: #fff;
+  border-color: red;
+  outline: 0;
+  box-shadow: 0 0 0 0.3rem rgba(252, 43, 102, 0.25);
+}
+
+.input-error{
+  border: 2px solid red;
 }
 
 .p-5 {
